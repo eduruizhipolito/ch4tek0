@@ -1,0 +1,22 @@
+{
+  "name": "whatsapp-chatbot-tasas",
+  "version": "1.0.0",
+  "description": "Chatbot de WhatsApp para agregador de tasas de bancos nacionales.",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon --ext js,json,env --watch .env src/index.js",
+    "start": "node src/index.js",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.5",
+    "canvas": "^3.1.2",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.27.2",
+    "fastify-plugin": "^5.0.1",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
