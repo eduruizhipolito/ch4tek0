@@ -1,8 +1,38 @@
-// src/services/whatsappService.js
 const apiUrl = `https://graph.facebook.com/${process.env.API_VERSION || 'v17.0'}`;
 const token = process.env.WHATSAPP_API_KEY;
 const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
+async function sendCurrencyButtons(to) {
+  const url = `${apiUrl}/${phoneNumberId}/messages`;
+  const body = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      body: { text: '¿En qué moneda deseas ahorrar?' },
+      action: {
+        buttons: [
+          { type: 'reply', reply: { id: 'moneda_pen', title: 'Soles' } },
+          { type: 'reply', reply: { id: 'moneda_usd', title: 'Dólares' } }
+        ]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('Error enviando botones de moneda:', error);
+  }
+  return res.ok;
+}
 async function sendMessage(to, message) {
   const url = `${apiUrl}/${phoneNumberId}/messages`;
   const body = {
@@ -36,9 +66,8 @@ async function sendWelcomeWithButtons(to, welcomeText) {
       body: { text: welcomeText },
       action: {
         buttons: [
-          { type: 'reply', reply: { id: 'op_tasas', title: 'Tasas' } },
-          { type: 'reply', reply: { id: 'op_cambio', title: 'Tipo de Cambio' } },
-          { type: 'reply', reply: { id: 'op_juego', title: 'Juego' } }
+          { type: 'reply', reply: { id: 'op_tasas', title: 'Consultar Tasas' } },
+          { type: 'reply', reply: { id: 'op_feedback', title: 'Enviar Comentarios' } }
         ]
       }
     }
@@ -116,9 +145,121 @@ async function sendImage(to, imageUrl, caption = '') {
   return data;
 }
 
+const institutionTypes = require('../models/institutionTypes');
+
+async function sendInstitutionTypeList(to) {
+  const url = `${apiUrl}/${phoneNumberId}/messages`;
+  const body = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'list',
+      header: { type: 'text', text: 'Selecciona el tipo de institución' },
+      body: { text: '¿Sobre qué tipo de institución quieres consultar tasas de ahorro?' },
+      footer: { text: 'Elige una opción para continuar' },
+      action: {
+        button: 'Ver opciones',
+        sections: [
+          {
+            title: 'Instituciones',
+            rows: institutionTypes
+          }
+        ]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('Error enviando lista de instituciones:', error);
+  }
+  return res.ok;
+}
+
+const plazosAhorro = require('../models/plazosAhorro');
+
+async function sendTermList(to) {
+  const url = `${apiUrl}/${phoneNumberId}/messages`;
+  const body = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'list',
+      header: { type: 'text', text: 'Selecciona el plazo del depósito' },
+      body: { text: '¿Por cuánto tiempo deseas depositar tu ahorro?' },
+      footer: { text: 'Elige un plazo para continuar' },
+      action: {
+        button: 'Ver plazos',
+        sections: [
+          {
+            title: 'Plazos disponibles',
+            rows: plazosAhorro
+          }
+        ]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('Error enviando lista de plazos:', error);
+  }
+  return res.ok;
+}
+
+const axios = require('axios');
+const FormData = require('form-data');
+
+/**
+ * Sube una imagen al endpoint /media de WhatsApp y retorna el media_id
+ * @param {Buffer} buffer - Imagen PNG en buffer
+ * @param {string} filename - Nombre del archivo (ej: ranking.png)
+ * @returns {Promise<string|null>} media_id o null si error
+ */
+async function uploadImageToWhatsApp(buffer, filename = 'ranking.png') {
+  const url = `${apiUrl}/${phoneNumberId}/media`;
+  const form = new FormData();
+  form.append('file', buffer, { filename, contentType: 'image/png' });
+  form.append('type', 'image/png');
+  form.append('messaging_product', 'whatsapp');
+
+  try {
+    const res = await axios.post(url, form, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        ...form.getHeaders()
+      }
+    });
+    return res.data.id || null;
+  } catch (err) {
+    console.error('Error subiendo imagen a WhatsApp /media:', err.response ? err.response.data : err);
+    return null;
+  }
+}
+
 module.exports = {
   sendMessage,
   sendWelcomeWithButtons,
   sendTasasMenuWithButtons,
-  sendImage
+  sendImage,
+  sendInstitutionTypeList,
+  sendTermList,
+  uploadImageToWhatsApp,
+  sendCurrencyButtons
 };
