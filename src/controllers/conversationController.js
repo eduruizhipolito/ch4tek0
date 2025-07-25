@@ -124,7 +124,8 @@ async function handleConversation(msg) {
           const { sendImage } = require('../services/whatsappService');
 
           const userStateFinal = getUserState(from);
-          const tipoEntidad = userStateFinal.institutionType;
+          // Si el usuario selecciona 'tipo_todas', pasamos null para obtener todas las instituciones
+const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : userStateFinal.institutionType;
           const monto = userStateFinal.monto;
           const plazo = userStateFinal.plazo;
           const moneda = userStateFinal.moneda;
