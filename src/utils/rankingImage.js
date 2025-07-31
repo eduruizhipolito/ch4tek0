@@ -35,30 +35,54 @@ function generarImagenRanking(tasas, moneda = 'PEN') {
   const width = 900;
   const baseRowHeight = 60;
   const headerHeight = 80;
+  const entidadColX = 110;
+  const entidadColMaxWidth = 200;
+  const entidadLineHeight = 28;
   const productoColX = 330;
   const productoColMaxWidth = 310
   const productoLineHeight = 28;
   // Precalcular alturas por wrapping
   const rowHeights = tasas.map(t => {
-    // Medir cuántas líneas requiere el producto
     const canvas = createCanvas(1,1);
     const ctx = canvas.getContext('2d');
     ctx.font = '24px Arial';
-    const words = t.nombre_producto.split(' ');
-    let line = '';
-    let lines = 1;
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
+    
+    // Medir cuántas líneas requiere la entidad
+    const entidadText = t.nombre_entidad || t.banco;
+    const entidadWords = entidadText.split(' ');
+    let entidadLine = '';
+    let entidadLines = 1;
+    for (let n = 0; n < entidadWords.length; n++) {
+      const testLine = entidadLine + entidadWords[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
+      if (testWidth > entidadColMaxWidth && n > 0) {
+        entidadLines++;
+        entidadLine = entidadWords[n] + ' ';
+      } else {
+        entidadLine = testLine;
+      }
+    }
+    
+    // Medir cuántas líneas requiere el producto
+    const productoWords = t.nombre_producto.split(' ');
+    let productoLine = '';
+    let productoLines = 1;
+    for (let n = 0; n < productoWords.length; n++) {
+      const testLine = productoLine + productoWords[n] + ' ';
       const metrics = ctx.measureText(testLine);
       const testWidth = metrics.width;
       if (testWidth > productoColMaxWidth && n > 0) {
-        lines++;
-        line = words[n] + ' ';
+        productoLines++;
+        productoLine = productoWords[n] + ' ';
       } else {
-        line = testLine;
+        productoLine = testLine;
       }
     }
-    return Math.max(baseRowHeight, lines * productoLineHeight + 20);
+    
+    // Usar el máximo entre entidad y producto
+    const maxLines = Math.max(entidadLines, productoLines);
+    return Math.max(baseRowHeight, maxLines * Math.max(entidadLineHeight, productoLineHeight) + 20);
   });
   const height = headerHeight + rowHeights.reduce((a,b) => a+b, 0) + 40;
 
@@ -95,7 +119,8 @@ ctx.fillText('Ahorras', ahorrasColRight - ctx.measureText('Ahorras').width, head
     const rowY = y - rowHeights[idx] + 40;
     ctx.fillStyle = '#64748b';
     ctx.fillText(`${idx + 1}.`, 40, rowY);
-    ctx.fillText(t.nombre_entidad || t.banco, 110, rowY); // Usar nombre_entidad si existe, si no banco
+    // Entidad con wrapping
+    const entidadLines = wrapText(ctx, t.nombre_entidad || t.banco, entidadColX, rowY, entidadColMaxWidth, entidadLineHeight);
     // Producto con wrapping
     ctx.fillStyle = '#64748b';
     const productoLines = wrapText(ctx, t.nombre_producto, productoColX, rowY, productoColMaxWidth, productoLineHeight);
