@@ -8,7 +8,6 @@
     "start": "node src/index.js",
     "test": "echo \"No test specified\" && exit 0"
   },
-
   "dependencies": {
     "@supabase/supabase-js": "^2.50.5",
     "axios": "^1.10.0",
@@ -17,7 +16,13 @@
     "fastify": "^4.27.2",
     "fastify-plugin": "^5.0.1",
     "form-data": "^4.0.4",
-    "node-fetch": "^2.7.0"
+    "joi": "^17.13.3",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^2.7.0",
+    "pdf-parse": "^1.1.1",
+    "playwright": "^1.54.1",
+    "puppeteer": "^24.15.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
