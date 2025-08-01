@@ -1,5 +1,5 @@
 // src/controllers/conversationController.js
-const { sendWelcomeWithButtons, sendTasasMenuWithButtons, sendMessage } = require('../services/whatsappService');
+const { sendWelcomeWithButtons, sendTasasMenuWithButtons, sendMessage, sendDepositoPlazoQuestion } = require('../services/whatsappService');
 const { message: welcomeMessage } = require('../models/welcomeMessage');
 const { getTasasAhorro } = require('../services/tasasAhorroService');
 
@@ -51,6 +51,32 @@ async function handleConversation(msg) {
     setUserState(from, { flujo: 'ahorros', step: 1 });
     await sendCurrencyButtons(from);
     console.log('Flujo de ahorros iniciado y botones de moneda enviados a', from);
+    return;
+  }
+
+  if (buttonId === 'op_plazo') {
+    // Iniciar flujo conversacional para Depósitos a Plazo
+    const { setUserState } = require('../services/userState');
+    const { sendCurrencyButtons } = require('../services/whatsappService');
+    setUserState(from, { flujo: 'plazo', step: 1 });
+    await sendCurrencyButtons(from);
+    console.log('Flujo de depósitos a plazo iniciado y botones de moneda enviados a', from);
+    return;
+  }
+
+  // Manejo de botones de la pregunta de Depósitos a Plazo
+  if (buttonId === 'deposito_si') {
+    const { setUserState } = require('../services/userState');
+    const { sendCurrencyButtons } = require('../services/whatsappService');
+    setUserState(from, { flujo: 'plazo', step: 1 });
+    await sendCurrencyButtons(from);
+    console.log('Usuario eligió consultar depósitos a plazo, iniciando flujo');
+    return;
+  }
+
+  if (buttonId === 'deposito_no') {
+    await sendWelcomeWithButtons(from, welcomeMessage + '\n\n¿Qué deseas hacer?');
+    console.log('Usuario eligió no consultar depósitos a plazo, volviendo al menú principal');
     return;
   }
 
@@ -296,11 +322,13 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
               },
               body: JSON.stringify(body)
             });
-            await sendMessage(from, '¡Listo! Aquí tienes el ranking de depósitos a plazo personalizado según tu perfil. Si deseas hacer otra consulta, selecciona una opción del menú principal.');
+            await sendMessage(from, '¡Listo! Aquí tienes el ranking de cuentas de ahorro personalizado según tu perfil.');
+            // Preguntar si desea consultar depósitos a plazo
+            await sendDepositoPlazoQuestion(from);
           } else {
             await sendMessage(from, 'Ocurrió un error al generar la imagen. Intenta de nuevo más tarde.');
+            resetUserState(from);
           }
-          resetUserState(from);
           return;
         }
       }

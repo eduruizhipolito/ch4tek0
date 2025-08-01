@@ -253,6 +253,38 @@ async function uploadImageToWhatsApp(buffer, filename = 'ranking.png') {
   }
 }
 
+async function sendDepositoPlazoQuestion(to) {
+  const url = `${apiUrl}/${phoneNumberId}/messages`;
+  const body = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      body: { text: '¿Deseas consultar las tasas de Depósitos a Plazo?' },
+      action: {
+        buttons: [
+          { type: 'reply', reply: { id: 'deposito_si', title: 'Sí' } },
+          { type: 'reply', reply: { id: 'deposito_no', title: 'No' } }
+        ]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('Error enviando pregunta de depósito a plazo:', error);
+  }
+  return res.ok;
+}
+
 module.exports = {
   sendMessage,
   sendWelcomeWithButtons,
@@ -261,5 +293,6 @@ module.exports = {
   sendInstitutionTypeList,
   sendTermList,
   uploadImageToWhatsApp,
-  sendCurrencyButtons
+  sendCurrencyButtons,
+  sendDepositoPlazoQuestion
 };
