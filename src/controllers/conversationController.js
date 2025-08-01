@@ -198,11 +198,13 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
               },
               body: JSON.stringify(body)
             });
-            await sendMessage(from, '¡Listo! Aquí tienes el ranking personalizado según tu perfil. Si deseas hacer otra consulta, selecciona una opción del menú principal.');
+            await sendMessage(from, '¡Listo! Aquí tienes el ranking de cuentas de ahorro personalizado según tu perfil.');
+            // Preguntar si desea consultar depósitos a plazo
+            await sendDepositoPlazoQuestion(from);
           } else {
             await sendMessage(from, 'Ocurrió un error al generar la imagen. Intenta de nuevo más tarde.');
+            resetUserState(from);
           }
-          resetUserState(from);
           return;
         }
       }
