@@ -174,7 +174,7 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
 
           // Generar imagen
           const top10 = tasasConMonto.slice(0, 10);
-          const imagenBuffer = generarImagenRanking(top10, moneda);
+          const imagenBuffer = generarImagenRanking(top10, moneda, 'ahorro');
 
           // Subir imagen a WhatsApp y obtener media_id
           const { uploadImageToWhatsApp } = require('../services/whatsappService');
@@ -300,7 +300,7 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
 
           // Generar imagen
           const top10 = tasasConMonto.slice(0, 10);
-          const imagenBuffer = generarImagenRanking(top10, moneda);
+          const imagenBuffer = generarImagenRanking(top10, moneda, 'plazo');
 
           // Subir imagen a WhatsApp y obtener media_id
           const { uploadImageToWhatsApp } = require('../services/whatsappService');

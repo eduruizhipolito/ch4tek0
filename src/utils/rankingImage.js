@@ -28,13 +28,15 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 /**
  * Genera una imagen de ranking Top Depósitos a Plazos a partir de los datos :)
  * @param {Array} tasas - Array de objetos { banco, nombre_producto, tasa }
+ * @param {string} moneda - Moneda (PEN o USD)
+ * @param {string} tipoProducto - Tipo de producto ('ahorro' o 'plazo')
  * @returns {Buffer} - Imagen PNG en buffer
  */
-function generarImagenRanking(tasas, moneda = 'PEN') {
+function generarImagenRanking(tasas, moneda = 'PEN', tipoProducto = 'ahorro') {
   // Parámetros de imagen
   const width = 900;
   const baseRowHeight = 60;
-  const headerHeight = 80;
+  const headerHeight = 100; // Aumentado para mejor espaciado
   const entidadColX = 110;
   const entidadColMaxWidth = 200;
   const entidadLineHeight = 28;
@@ -99,7 +101,14 @@ function generarImagenRanking(tasas, moneda = 'PEN') {
   let monedaTxt = '';
   if (moneda === 'PEN') monedaTxt = ' (Soles)';
   else if (moneda === 'USD') monedaTxt = ' (Dólares)';
-  ctx.fillText('Top Tasas de Ahorro' + monedaTxt, 40, 55);
+  
+  // Título dinámico según el tipo de producto
+  let tituloProducto = 'Top Tasas de Ahorro';
+  if (tipoProducto === 'plazo') {
+    tituloProducto = 'Top Tasas de Depósitos Plazo';
+  }
+  
+  ctx.fillText(tituloProducto + monedaTxt, 40, 50); // Y=50 para mejor espaciado
 
   // Encabezados
   ctx.font = 'bold 26px Arial';
