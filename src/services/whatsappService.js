@@ -287,14 +287,13 @@ async function sendDepositoPlazoQuestion(to) {
 
 async function sendEndOfFlowMenuWithButtons(to, productoActual = 'ahorros') {
   const url = `${apiUrl}/${phoneNumberId}/messages`;
-  // Determinar el texto y las opciones según el flujo actual
-  let otroProducto, otroProductoId;
+  let otroProductoId, otroProductoTitulo;
   if (productoActual === 'ahorros') {
-    otroProducto = 'Depósitos a Plazo';
     otroProductoId = 'op_plazo';
+    otroProductoTitulo = 'Tasas Dep. a Plazo';
   } else {
-    otroProducto = 'Cuentas de Ahorro';
     otroProductoId = 'op_ahorros';
+    otroProductoTitulo = 'Tasa de Ahorros';
   }
   const body = {
     messaging_product: 'whatsapp',
@@ -305,9 +304,9 @@ async function sendEndOfFlowMenuWithButtons(to, productoActual = 'ahorros') {
       body: { text: '¿Qué más deseas hacer?' },
       action: {
         buttons: [
-          { type: 'reply', reply: { id: otroProductoId, title: `Consultar tasas de ${otroProducto}` } },
-          { type: 'reply', reply: { id: 'op_premium_alertas', title: 'Recibir Alertas Premium' } },
-          { type: 'reply', reply: { id: 'op_feedback', title: 'Enviar Comentarios' } }
+          { type: 'reply', reply: { id: otroProductoId, title: otroProductoTitulo } },
+          { type: 'reply', reply: { id: 'op_premium_alertas', title: 'Recibir Alertas' } },
+          { type: 'reply', reply: { id: 'op_feedback', title: 'Comentarios' } }
         ]
       }
     }
