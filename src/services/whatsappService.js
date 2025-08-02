@@ -290,10 +290,10 @@ async function sendEndOfFlowMenuWithButtons(to, productoActual = 'ahorros') {
   let otroProductoId, otroProductoTitulo;
   if (productoActual === 'ahorros') {
     otroProductoId = 'op_plazo';
-    otroProductoTitulo = 'Tasas Dep. a Plazo';
+    otroProductoTitulo = 'Tasas Dep. Plazo';
   } else {
     otroProductoId = 'op_ahorros';
-    otroProductoTitulo = 'Tasa de Ahorros';
+    otroProductoTitulo = 'Tasa de ahorros';
   }
   const body = {
     messaging_product: 'whatsapp',
