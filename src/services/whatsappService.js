@@ -335,5 +335,6 @@ module.exports = {
   sendTermList,
   uploadImageToWhatsApp,
   sendCurrencyButtons,
-  sendDepositoPlazoQuestion
+  sendDepositoPlazoQuestion,
+  sendEndOfFlowMenuWithButtons
 };
