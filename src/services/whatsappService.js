@@ -66,7 +66,7 @@ async function sendWelcomeWithButtons(to, welcomeText) {
       body: { text: welcomeText },
       action: {
         buttons: [
-          { type: 'reply', reply: { id: 'op_tasas', title: 'Consultar Tasas' } },
+          { type: 'reply', reply: { id: 'op_tasas', title: 'Consultar Tasas de Ahorro/Plazo' } },
           { type: 'reply', reply: { id: 'op_feedback', title: 'Enviar Comentarios' } }
         ]
       }
@@ -281,6 +281,48 @@ async function sendDepositoPlazoQuestion(to) {
   if (!res.ok) {
     const error = await res.text();
     console.error('Error enviando pregunta de depósito a plazo:', error);
+  }
+  return res.ok;
+}
+
+async function sendEndOfFlowMenuWithButtons(to, productoActual = 'ahorros') {
+  const url = `${apiUrl}/${phoneNumberId}/messages`;
+  // Determinar el texto y las opciones según el flujo actual
+  let otroProducto, otroProductoId;
+  if (productoActual === 'ahorros') {
+    otroProducto = 'Depósitos a Plazo';
+    otroProductoId = 'op_plazo';
+  } else {
+    otroProducto = 'Cuentas de Ahorro';
+    otroProductoId = 'op_ahorros';
+  }
+  const body = {
+    messaging_product: 'whatsapp',
+    to,
+    type: 'interactive',
+    interactive: {
+      type: 'button',
+      body: { text: '¿Qué más deseas hacer?' },
+      action: {
+        buttons: [
+          { type: 'reply', reply: { id: otroProductoId, title: `Consultar tasas de ${otroProducto}` } },
+          { type: 'reply', reply: { id: 'op_premium_alertas', title: 'Recibir Alertas Premium' } },
+          { type: 'reply', reply: { id: 'op_feedback', title: 'Enviar Comentarios' } }
+        ]
+      }
+    }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    console.error('Error enviando menú de fin de flujo:', error);
   }
   return res.ok;
 }

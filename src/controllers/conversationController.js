@@ -1,5 +1,5 @@
 // src/controllers/conversationController.js
-const { sendWelcomeWithButtons, sendTasasMenuWithButtons, sendMessage, sendDepositoPlazoQuestion } = require('../services/whatsappService');
+const { sendWelcomeWithButtons, sendTasasMenuWithButtons, sendMessage, sendDepositoPlazoQuestion, sendEndOfFlowMenuWithButtons } = require('../services/whatsappService');
 const { message: welcomeMessage } = require('../models/welcomeMessage');
 const { getTasasAhorro } = require('../services/tasasAhorroService');
 
@@ -199,8 +199,8 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
               body: JSON.stringify(body)
             });
             await sendMessage(from, '¡Listo! Aquí tienes el ranking de cuentas de ahorro según tu perfil.');
-            // Preguntar si desea consultar depósitos a plazo
-            await sendDepositoPlazoQuestion(from);
+            // Menú de fin de flujo: ¿Qué más deseas hacer?
+            await sendEndOfFlowMenuWithButtons(from, 'ahorros');
           } else {
             await sendMessage(from, 'Ocurrió un error al generar la imagen. Intenta de nuevo más tarde.');
             resetUserState(from);
@@ -325,8 +325,8 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
               body: JSON.stringify(body)
             });
             await sendMessage(from, '¡Listo! Aquí tienes el ranking de depósitos a plazo según tu perfil.');
-            // Preguntar si desea consultar cuentas de ahorro
-            await sendDepositoPlazoQuestion(from);
+            // Menú de fin de flujo: ¿Qué más deseas hacer?
+            await sendEndOfFlowMenuWithButtons(from, 'plazo');
           } else {
             await sendMessage(from, 'Ocurrió un error al generar la imagen. Intenta de nuevo más tarde.');
             resetUserState(from);
