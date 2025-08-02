@@ -18,8 +18,8 @@ Con Chateko Premium recibirás:
 ✅ Soporte prioritario
 
 *Planes disponibles SOLO para nuestros primeros usuarios:*
-📅 Plan Anual: S/50 (ahorra +15%)
-📅 Plan Mensual: S/5
+📅 Anual: S/50 (ahorra +15%)
+📅 Mensual: S/5
 
 ¿Qué plan prefieres?`;
 
@@ -33,16 +33,16 @@ Con Chateko Premium recibirás:
       action: {
         buttons: [
           { 
-            type: 'url', 
-            url: { 
-              url: urlPagoAnual,
+            type: 'reply', 
+            reply: { 
+              id: 'pago_anual', 
               title: 'Plan Anual S/50' 
             } 
           },
           { 
-            type: 'url', 
-            url: { 
-              url: urlPagoMensual,
+            type: 'reply', 
+            reply: { 
+              id: 'pago_mensual', 
               title: 'Plan Mensual S/5' 
             } 
           },
@@ -94,7 +94,7 @@ Para completar tu suscripción a Chateko Premium, haz clic en el siguiente enlac
 
 ${paymentUrl}
 
-Una vez completado el pago, envía el mensaje "pago_confirmado" para activar tu cuenta premium.
+Una vez completado el pago, la web te reenviará a este chat.
 
 ¡Gracias por elegir Chateko Premium! 🚀`;
 

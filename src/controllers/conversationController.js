@@ -87,13 +87,14 @@ async function handleConversation(msg) {
     return;
   }
 
-  // --- MANEJO DE BOTONES DE PAGO PREMIUM (URL) ---
+  // --- MANEJO DE BOTONES DE PAGO PREMIUM ---
   if (buttonId === 'pago_anual') {
     const { registrarIntencionPremium } = require('../services/premiumDatabaseService');
+    const { sendPaymentLink } = require('../services/whatsappService');
     const result = await registrarIntencionPremium(from, 'anual', 50);
     
     if (result.success) {
-      await sendMessage(from, '✅ *Plan Anual seleccionado*\n\nGracias por elegir el Plan Anual (S/50).\n\nUna vez que completes el pago en MercadoPago, envía el mensaje "pago_confirmado" para activar tu cuenta premium.\n\n¡Gracias por confiar en Chateko Premium! 🚀');
+      await sendPaymentLink(from, 'anual');
     } else {
       await sendMessage(from, 'Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo.');
     }
@@ -102,10 +103,11 @@ async function handleConversation(msg) {
 
   if (buttonId === 'pago_mensual') {
     const { registrarIntencionPremium } = require('../services/premiumDatabaseService');
+    const { sendPaymentLink } = require('../services/whatsappService');
     const result = await registrarIntencionPremium(from, 'mensual', 5);
     
     if (result.success) {
-      await sendMessage(from, '✅ *Plan Mensual seleccionado*\n\nGracias por elegir el Plan Mensual (S/5).\n\nUna vez que completes el pago en MercadoPago, envía el mensaje "pago_confirmado" para activar tu cuenta premium.\n\n¡Gracias por confiar en Chateko Premium! 🚀');
+      await sendPaymentLink(from, 'mensual');
     } else {
       await sendMessage(from, 'Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo.');
     }
