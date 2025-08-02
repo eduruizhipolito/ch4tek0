@@ -87,16 +87,28 @@ async function handleConversation(msg) {
     return;
   }
 
-  // --- MANEJO DE BOTONES DE PAGO PREMIUM ---
+  // --- MANEJO DE BOTONES DE PAGO PREMIUM (URL) ---
   if (buttonId === 'pago_anual') {
-    const { sendPaymentLink } = require('../services/whatsappService');
-    await sendPaymentLink(from, 'anual');
+    const { registrarIntencionPremium } = require('../services/premiumDatabaseService');
+    const result = await registrarIntencionPremium(from, 'anual', 50);
+    
+    if (result.success) {
+      await sendMessage(from, '✅ *Plan Anual seleccionado*\n\nGracias por elegir el Plan Anual (S/50).\n\nUna vez que completes el pago en MercadoPago, envía el mensaje "pago_confirmado" para activar tu cuenta premium.\n\n¡Gracias por confiar en Chateko Premium! 🚀');
+    } else {
+      await sendMessage(from, 'Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo.');
+    }
     return;
   }
 
   if (buttonId === 'pago_mensual') {
-    const { sendPaymentLink } = require('../services/whatsappService');
-    await sendPaymentLink(from, 'mensual');
+    const { registrarIntencionPremium } = require('../services/premiumDatabaseService');
+    const result = await registrarIntencionPremium(from, 'mensual', 5);
+    
+    if (result.success) {
+      await sendMessage(from, '✅ *Plan Mensual seleccionado*\n\nGracias por elegir el Plan Mensual (S/5).\n\nUna vez que completes el pago en MercadoPago, envía el mensaje "pago_confirmado" para activar tu cuenta premium.\n\n¡Gracias por confiar en Chateko Premium! 🚀');
+    } else {
+      await sendMessage(from, 'Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo.');
+    }
     return;
   }
 
@@ -364,8 +376,16 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
 
   // --- MANEJO DE MENSAJE PAGO_CONFIRMADO ---
   if (msg.type === 'text' && msg.text && msg.text.body && msg.text.body.toLowerCase() === 'pago_confirmado') {
-    await sendMessage(from, '¡Felicidades! 🎉\n\nTu suscripción a Chateko Premium ha sido activada exitosamente.\n\nAhora recibirás alertas personalizadas cuando las tasas cambien y tendrás acceso a funciones exclusivas.\n\n¡Gracias por confiar en nosotros!');
-    // Aquí se puede agregar lógica para marcar al usuario como premium en la base de datos
+    const { confirmarPagoPremium } = require('../services/premiumDatabaseService');
+    const result = await confirmarPagoPremium(from);
+    
+    if (result.success) {
+      const planInfo = result.plan_type === 'anual' ? 'Plan Anual (S/50)' : 'Plan Mensual (S/5)';
+      await sendMessage(from, `¡Gracias por tu confirmación! 🚀\n\nHemos recibido tu confirmación de pago para el ${planInfo}.\n\nTu solicitud está siendo validada por nuestro equipo. Una vez aprobada, recibirás alertas personalizadas cuando las tasas cambien.\n\n¡Gracias por confiar en Chateko Premium!`);
+    } else {
+      await sendMessage(from, 'No encontramos una intención de pago reciente para validar. Asegúrate de haber seleccionado un plan primero.');
+    }
+    
     resetUserState(from);
     await sendWelcomeWithButtons(from, welcomeMessage + '\n\n¿Qué deseas hacer?');
     return;

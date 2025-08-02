@@ -15,12 +15,11 @@ async function sendPremiumOfferWithPaymentButtons(to) {
 Con Chateko Premium recibirás:
 ✅ Alertas personalizadas cuando las tasas cambien
 ✅ Notificaciones de nuevos productos bancarios
-✅ Análisis exclusivos del mercado financiero
 ✅ Soporte prioritario
 
-*Planes disponibles:*
-📅 Plan Anual: S/120 (ahorra 20%)
-📅 Plan Mensual: S/15
+*Planes disponibles SOLO para nuestros primeros usuarios:*
+📅 Plan Anual: S/50 (ahorra +15%)
+📅 Plan Mensual: S/5
 
 ¿Qué plan prefieres?`;
 
@@ -34,17 +33,17 @@ Con Chateko Premium recibirás:
       action: {
         buttons: [
           { 
-            type: 'reply', 
-            reply: { 
-              id: 'pago_anual', 
-              title: 'Plan Anual S/120' 
+            type: 'url', 
+            url: { 
+              url: urlPagoAnual,
+              title: 'Plan Anual S/50' 
             } 
           },
           { 
-            type: 'reply', 
-            reply: { 
-              id: 'pago_mensual', 
-              title: 'Plan Mensual S/15' 
+            type: 'url', 
+            url: { 
+              url: urlPagoMensual,
+              title: 'Plan Mensual S/5' 
             } 
           },
           { 
@@ -82,11 +81,11 @@ async function sendPaymentLink(to, planType) {
   if (planType === 'anual') {
     paymentUrl = process.env.MERCADOPAGO_URL_ANUAL || 'https://mercadopago.com/anual';
     planName = 'Plan Anual';
-    price = 'S/120';
+    price = 'S/50';
   } else {
     paymentUrl = process.env.MERCADOPAGO_URL_MENSUAL || 'https://mercadopago.com/mensual';
     planName = 'Plan Mensual';
-    price = 'S/15';
+    price = 'S/5';
   }
 
   const messageText = `💳 *${planName} - ${price}*
