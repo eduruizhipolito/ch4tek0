@@ -2,8 +2,14 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
+
+// Verificar que las variables de entorno existan
+if (!supabaseUrl || !supabaseKey) {
+  console.error('ADVERTENCIA: Variables de Supabase no configuradas. Las funciones premium no funcionarán.');
+}
+
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 /**
  * Registra la intención de pago premium en Supabase
@@ -14,6 +20,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  */
 async function registrarIntencionPremium(phoneNumber, planType, price) {
   try {
+    if (!supabase) {
+      console.log('Supabase no configurado, simulando registro de intención premium:', { phoneNumber, planType, price });
+      return { success: true, id: 'mock_id', status: 'pendiente' };
+    }
+
     const { data, error } = await supabase.rpc('registrar_intencion_premium', {
       p_phone_number: phoneNumber,
       p_plan_type: planType,
@@ -40,6 +51,11 @@ async function registrarIntencionPremium(phoneNumber, planType, price) {
  */
 async function confirmarPagoPremium(phoneNumber) {
   try {
+    if (!supabase) {
+      console.log('Supabase no configurado, simulando confirmación de pago premium:', phoneNumber);
+      return { success: true, plan_type: 'anual', price: 50 };
+    }
+
     const { data, error } = await supabase.rpc('confirmar_pago_premium', {
       p_phone_number: phoneNumber
     });
