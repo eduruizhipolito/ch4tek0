@@ -326,6 +326,9 @@ async function sendEndOfFlowMenuWithButtons(to, productoActual = 'ahorros') {
   return res.ok;
 }
 
+// Importar funciones premium
+const { sendPremiumOfferWithPaymentButtons, sendPaymentLink } = require('./premiumService');
+
 module.exports = {
   sendMessage,
   sendWelcomeWithButtons,
@@ -336,5 +339,7 @@ module.exports = {
   uploadImageToWhatsApp,
   sendCurrencyButtons,
   sendDepositoPlazoQuestion,
-  sendEndOfFlowMenuWithButtons
+  sendEndOfFlowMenuWithButtons,
+  sendPremiumOfferWithPaymentButtons,
+  sendPaymentLink
 };

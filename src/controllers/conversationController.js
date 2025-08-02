@@ -44,6 +44,13 @@ async function handleConversation(msg) {
     return;
   }
 
+  // --- FLUJO PREMIUM ALERTAS ---
+  if (buttonId === 'op_premium_alertas') {
+    const { sendPremiumOfferWithPaymentButtons } = require('../services/whatsappService');
+    await sendPremiumOfferWithPaymentButtons(from);
+    return;
+  }
+
   if (buttonId === 'op_ahorros') {
     // Iniciar flujo conversacional para Tasas de Ahorro
     const { setUserState } = require('../services/userState');
@@ -77,6 +84,24 @@ async function handleConversation(msg) {
   if (buttonId === 'deposito_no') {
     await sendWelcomeWithButtons(from, welcomeMessage + '\n\n¿Qué deseas hacer?');
     console.log('Usuario eligió no consultar depósitos a plazo, volviendo al menú principal');
+    return;
+  }
+
+  // --- MANEJO DE BOTONES DE PAGO PREMIUM ---
+  if (buttonId === 'pago_anual') {
+    const { sendPaymentLink } = require('../services/whatsappService');
+    await sendPaymentLink(from, 'anual');
+    return;
+  }
+
+  if (buttonId === 'pago_mensual') {
+    const { sendPaymentLink } = require('../services/whatsappService');
+    await sendPaymentLink(from, 'mensual');
+    return;
+  }
+
+  if (buttonId === 'cancelar_premium') {
+    await sendWelcomeWithButtons(from, welcomeMessage + '\n\n¿Qué deseas hacer?');
     return;
   }
 
@@ -335,6 +360,15 @@ const tipoEntidad = userStateFinal.institutionType === 'tipo_todas' ? null : use
         }
       }
     }
+  }
+
+  // --- MANEJO DE MENSAJE PAGO_CONFIRMADO ---
+  if (msg.type === 'text' && msg.text && msg.text.body && msg.text.body.toLowerCase() === 'pago_confirmado') {
+    await sendMessage(from, '¡Felicidades! 🎉\n\nTu suscripción a Chateko Premium ha sido activada exitosamente.\n\nAhora recibirás alertas personalizadas cuando las tasas cambien y tendrás acceso a funciones exclusivas.\n\n¡Gracias por confiar en nosotros!');
+    // Aquí se puede agregar lógica para marcar al usuario como premium en la base de datos
+    resetUserState(from);
+    await sendWelcomeWithButtons(from, welcomeMessage + '\n\n¿Qué deseas hacer?');
+    return;
   }
 
   // Primer mensaje o mensaje de texto
