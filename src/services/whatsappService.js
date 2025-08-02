@@ -66,7 +66,7 @@ async function sendWelcomeWithButtons(to, welcomeText) {
       body: { text: welcomeText },
       action: {
         buttons: [
-          { type: 'reply', reply: { id: 'op_tasas', title: 'Consultar Tasas de Ahorro/Plazo' } },
+          { type: 'reply', reply: { id: 'op_tasas', title: 'Tasas de Ahorro/Plazo' } },
           { type: 'reply', reply: { id: 'op_feedback', title: 'Enviar Comentarios' } }
         ]
       }
